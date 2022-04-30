@@ -1,0 +1,14 @@
+command /plugins [<text>]:
+    trigger:
+        if executor is not an op:
+            message "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
+        else:   
+            set {_plugins::*} to "&aXeNitrogen&r"
+            if player's world is "kitpvp":
+                add "&aKitPvP&r" to {_plugins::*}
+            else if "%player's world%" contains "hub":
+                add "&aHub&r" to {_plugins::*}
+            set {_plugins::*} to sorted {_plugins::*}
+            set {_plugins} to "%{_plugins::*}%"
+            replace all " and" with "," in {_plugins}
+            message "Plugins (%size of {_plugins::*}%): &r%{_plugins}%"
