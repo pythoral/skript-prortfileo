@@ -1,0 +1,40 @@
+command /report [<offline player>] [<text>]:
+    trigger:
+        if arg 1 is not set:
+            message "&eUsage: &6/report &f<player>"
+        else:
+            if arg 1 is not online:
+                message "&cNo player matching &e%arg-1% &cis connected to this server."
+            else:
+                if "%arg-1's world%" is not "%player's world%":
+                    message "&cNo player matching &e%arg-1% &cis connected to this server."
+                else:
+                    if arg 1 has permission "server.staff":
+                        message "&cYou cannot report %arg-1's displayname%."
+                    else:
+                        if arg 1 is player:
+                            message "&cYou cannot report yourself."
+                        else:
+                            set {_player} to arg 1
+                            open virtual chest inventory with size 1 named "Reporting %arg-1%" to player
+                            format gui slot 0 of player with diamond sword named "&6Combat Hacks" to run:
+                                close player's inventory 
+                                report(player , {_player} , "Combat Hacks")
+                            format gui slot 1 of player with sugar named "&6Movement Hacks" to run:
+                                close player's inventory 
+                                report(player , {_player} , "Movement Hacks")
+                            format gui slot 2 of player with book and quill named "&6Other Hacks" to run:
+                                close player's inventory 
+                                report(player , {_player} , "Other Hacks")
+                            format gui slot 3 of player with cobweb named "&6Other" to run:
+                                close player's inventory 
+                                report(player , {_player} , "Other")
+
+function report(r: player , o: player , reason: string):
+    set {_r} to "%{_r}%" parsed as offline player
+    set {_o} to "%{_o}%" parsed as offline player
+    message "&aYour report has been submitted." to {_r}
+    set {_rd} to {_r}'s displayname
+    set {_od} to {_o}'s displayname
+    set {_world} to {_r}'s world
+    message "&b[S] &3[%{_world}%] &r%{_rd}% &chas reported &r%{_od}% &cfor &6%{_reason}%&c." to all players where [input has permission "server.staff"]
