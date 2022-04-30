@@ -1,0 +1,31 @@
+options:
+    time: 3
+
+on join:
+    set {spam.%player%} to false    
+
+on first join:
+    set {spam.%player%} to false   
+
+variables:
+    {spam.%player%} = false
+
+on chat:
+    if player has permission "server.antispam":
+        stop
+    else:
+        if {spam.%player%} is false:
+            set {spam.%player%} to true
+            set {spam.timer.%player%} to {@time}
+        else:
+            cancel event
+            send "&cYou can talk in &6%{spam.timer.%player%}%&r &cseconds!"
+
+every 1 second:
+    loop all players:
+        if {spam.%loop-player%} is true:
+            if {spam.timer.%loop-player%} is not 1:
+                remove 1 from {spam.timer.%loop-player%}
+            else:
+                set {spam.%loop-player%} to false
+                clear {spam.timer.%loop-player%}
