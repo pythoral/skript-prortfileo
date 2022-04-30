@@ -1,0 +1,34 @@
+# this is untested, lmk if this doesnt work
+
+command /randomtp:
+    description:  teleprot player to random plcace
+    permission: server.rtp
+    permission message: &cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error. # permission thing.
+    aliases: /rtp, /wild, /random
+    trigger:
+            if difference between {cooldowns::randomtp::%player%} and now < 5 minutes:
+                send "&cYou need to wait to be able to use /rtp."
+            else:
+                send "&cPlease do not move until you get teleported."
+                rtp(player)
+                    
+function rtp(p: player):
+    delete {movewait.%{_p}%}
+    set {_loc::old} to {_p}'s location
+    continueRtpLOOP({_p}, {_loc::old})
+       
+function continueRtpLOOP(p: player, oldloc: location):
+    if {_p}'s location is {_oldloc}:
+        set {_loc::new} to location at random number between -300 and -300, 0, random number between -300 and -300 in {_p}'s world
+        loop blocks above {_loc::new}:
+            if loop-block and block above loop-block are air:
+                if block under loop-block is not air or water or lava:
+                    set {_loc::new} to location of loop-block
+                    teleport {_p} to {_loc::new}
+                    set {cooldowns::randomtp::%{_p}%} to now
+                    if light level at {_p} <= 2:
+                        set block at {_p} to torch
+                        stop
+                    stop
+        wait 2 ticks
+        continueRtpLOOP({_p}, {_oldloc})
