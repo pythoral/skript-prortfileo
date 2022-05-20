@@ -1,0 +1,577 @@
+# punishment.sk come w this
+
+command /setserverprefix [<text>]:
+	permission: *
+	permission message: &cYou dont have perms to this nerd.
+	trigger:
+		if arg-1 is not set:
+			send "&c/setserverprefix (name)"
+		if arg-1 is set:
+			send "&3You have set the server prefix to &r%colored arg-1%&3!"
+			set {mainprefix} to colored arg-1
+
+command /serverprefix:
+	trigger:
+		send "&3The server prefix is &r%{mainprefix}%&3!"
+		
+command /fly [<offline player>]:
+	permission: staff.fly
+	permission message: &cdont try it this was patched lol
+	trigger:
+		if arg-1 is not set:
+			if executor is player:
+				If {fly.%player%} is not set:
+					send "%{mainprefix}% &8> &7You have enabled &aflight&7!"
+					set player's flight mode to true
+					set {fly.%player%} to true
+					stop
+				if {fly.%player%} is set:	
+					send "%{mainprefix}% &8> &7You have disabled &cflight&7!"
+					set player's flight mode to false
+					clear {fly.%player%}
+					stop
+			if executor is console:
+				send "%{mainprefix}% &8> &cPlease run this command as a player." to console
+				send "&7You can still set player's flight through console though." to console
+		if arg-1 is set:
+			if arg-1 is online:
+				if executor is player:
+					If {fly.%arg-1%} is not set:
+						send "%{mainprefix}% &8> &7You have enabled &c%arg-1%&7's &aflight&7!"
+						send "%{mainprefix}% &8> &7You have had your &aflight &7enabled by &c%sender%&7!" to arg-1
+						set arg-1's flight mode to true
+						set {fly.%arg-1%} to true
+						stop
+					if {fly.%player%} is set:	
+						send "%{mainprefix}% &8> &7You have disabled &c%arg-1%&7's &aflight&7!"
+						send "%{mainprefix}% &8> &7You have had your &aflight &7disabled by &c%sender%&7!" to arg-1
+						set arg-1's flight mode to false
+						clear {fly.%arg-1%}
+						stop
+				if executor is console:
+					If {fly.%arg-1%} is not set:
+						send "%{mainprefix}% &8> &7You have enabled &c%arg-1%&7's &aflight&7!" to console
+						send "%{mainprefix}% &8> &7You have had your &aflight &7enabled by &cCONSOLE&7!" to arg-1
+						set arg-1's flight mode to true
+						set {fly.%arg-1%} to true
+						stop
+					if {fly.%player%} is set:	
+						send "%{mainprefix}% &8> &7You have disabled &c%arg-1%&7's &aflight&7!" to console
+						send "%{mainprefix}% &8> &7You have had your &aflight &7disabled by &cCONSOLE&7!" to arg-1
+						set arg-1's flight mode to false
+						clear {fly.%arg-1%}
+						stop
+			if arg-1 is offline:
+				if executor is player:
+					send "%{mainprefix}% &8> &7Sorry, but &c%arg-1% &7is offline!"
+				if executor is console:
+					send "%{mainprefix}% &8> &7Sorry, but &c%arg-1% &7is offline!" to console
+					
+command /mutechat [<text>]:
+	permission: staff.chat.mute
+	permission message: &c You don't have the required permission to perform that command.
+	trigger:
+		if arg-1 is not set:
+			if {Globalchat} is not set:
+				set {Globalchat} to true
+				broadcast "%{mainprefix}% &8> &cChat muted by %sender%."
+				stop trigger
+
+			if {Globalchat} is set:
+				clear {Globalchat}
+				broadcast "%{mainprefix}% &8> &aChat unmuted by %sender%."
+		if arg-1 is set:
+			if arg-1 is "-s":
+				if {Globalchat} is not set:
+					set {Globalchat} to true
+					broadcast "%{mainprefix}% &8> &cChat muted."
+					loop all players:
+						if loop-player has permission "staff.logs":
+							send "&b[S] &b&o%player% &3has silently &bmuted &3the &bchat&3." to loop-player
+					stop trigger
+
+				if {Globalchat} is set:
+					clear {Globalchat}
+					broadcast "%{mainprefix}% &8> &aChat unmuted."
+					loop all players:
+						if loop-player has permission "staff.logs":
+							send "&b[S] &b&o%player% &3has silently &bunmuted &3the &bchat&3." to loop-player
+			if arg-1 is not "-s":
+				send "&c/mutechat (-s)"
+
+on chat:
+    if {Globalchat} is true:
+        if player has permission "staff.chat.bypass":
+            stop trigger
+        else:
+            cancel event
+            send "&cChat is currently muted."
+
+command /gmc [<offline player>]:
+	permission: staff.gamemode
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			set gamemode of player to creative
+			send "%{mainprefix}% &8> &7You have updated your gamemode to creative."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, &c%arg-1% &7is offline."
+			else:
+				set gamemode of arg-1 to creative
+				send "%{mainprefix}% &8> &7You have updated &6%arg-1%&7's gamemode to creative."
+				send "%{mainprefix}% &8> &7Your gamemode has been updated to creative." to arg-1
+				
+command /gms [<offline player>]:
+	permission: staff.gamemode
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			set gamemode of player to survival
+			send "%{mainprefix}% &8> &7You have updated your gamemode to survival."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, &c%arg-1% &7is offline."
+			else:
+				set gamemode of arg-1 to survival
+				send "%{mainprefix}% &8> &7You have updated &6%arg-1%&7's gamemode to survival."
+				send "%{mainprefix}% &8> &7Your gamemode has been updated to survival." to arg-1
+				
+command /gma [<offline player>]:
+	permission: staff.gamemode
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			set gamemode of player to adventure
+			send "%{mainprefix}% &8> &7You have updated your gamemode to adventure."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, &c%arg-1% &7is offline."
+			else:
+				set gamemode of arg-1 to adventure
+				send "%{mainprefix}% &8> &7You have updated &6%arg-1%&7's gamemode to adventure."
+				send "%{mainprefix}% &8> &7Your gamemode has been updated to adventure." to arg-1
+
+command /gmsp [<offline player>]:
+	permission: staff.gamemode
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			execute player command "minecraft:gamemode spectator"
+			send "%{mainprefix}% &8> &7You have updated your gamemode to spectator."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, &c%arg-1% &7is offline."
+			else:
+				execute player command "minecraft:gamemode spectator %arg-1%"
+				send "%{mainprefix}% &8> &7You have updated &6%arg-1%&7's gamemode to spectator."
+				send "%{mainprefix}% &8> &7Your gamemode has been updated to spectator." to arg-1		
+				
+command /f:
+    permission: staff.massay
+    trigger:
+        loop all players:
+            make loop-player say "f"
+            
+command /14:
+    permission: staff.massay
+    trigger:
+        loop all players:
+            make loop-player say "14"
+            
+command /massay [<text>]:
+    permission: staff.massay
+    trigger:
+        if arg-1 is not set:
+            send "&c/massay (text)"
+        else:
+            loop all players:
+                make loop-player say arg-1
+
+command /rename [<text>]:
+	description: Renames the item in your inventory slot.
+	usage: /rename <name>
+	permission: staff.rename
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is set:
+			set the name of player's tool to "&r%colored arg-1%"
+			send "%{mainprefix}% &8> &7Your items name has been changed to &r%colored arg-1%&7."
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &7Please select a name!"
+
+command /relore [<integer=1>] [<text="">]:
+	aliases: lore
+	permission: staff.lore
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-2 is set:
+			set line arg-1 of the lore of player's tool to "&r%colored arg-2%"
+			send "%{mainprefix}% &8> &7Your items lore has been changed to &r%colored arg-2%&7."
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &7Please select a line, and a text."
+
+variables:
+ {uniquejoins} = 3
+
+on first join:
+    add 1 to {uniquejoins}
+    send "&b%player% &3is new to %{mainprefix}%&3! &8[&e##%{uniquejoins}%&8]&3!" to all players
+    
+on join:
+    set the join message to ""
+    broadcast "&8[&b+&8] &3%player%"
+    
+on quit:
+    set the quit message to ""
+    broadcast "&8[&b-&8] &3%player%"
+ 
+command /tp [<offline player>]:			
+    trigger:
+        if player has permission "essentials.tp" or "essentials.teleport" or "staff.tp":
+			if arg-1 is set:
+				if arg-1 is online:
+					loop all players:
+						loop-player has permission "staff.logs"
+						send "&b[S] &b&o%sender% &3has teleported to &b%arg-1%" to loop-player
+					teleport sender to arg 1
+				if arg-1 is offline:
+					send "%{mainprefix}% &8> &cYou may not teleport to an offline player."
+			if arg-1 is not set:
+				send "%{mainprefix}% &8> &cPlease select a player!"
+		else:
+			send "&cYou are not authorized for this command!"
+				
+command /tphere [<offline player>]:
+	trigger:
+        if player has permission "essentials.tphere" or "essentials.teleporthere" or "staff.tp":
+			if arg-1 is set:
+				if arg-1 is online:
+					loop all players:
+						loop-player has permission "staff.logs"
+						send "&b[S] &b&o%sender% &3has teleported &b%arg-1% &3to themselves." to loop-player
+					teleport arg-1 to sender
+				if arg-1 is offline:
+					send "%{mainprefix}% &8> &cYou may not bring an offline player."
+			if arg-1 is not set:
+				send "%{mainprefix}% &8> &cPlease select a player!"
+		else:
+			send "&cYou are not authorized for this command!"
+				
+command /tpall:
+	trigger:
+		if player has permission "essentials.tpall" or "essentials.teleportall" or "staff.tp":
+			loop all players:
+				loop-player has permission "staff.logs"
+				send "&b[S] &b&o%sender% &3has teleported everyone to themself." to loop-player
+			loop all players:
+				teleport loop-player to sender
+		else:
+			send "&cYou are not authorized for this command!"
+					
+command /setspawn:
+	permission: staff.spawn
+	permission message: &cYou are not authorized for this command!
+	description: Set spawn at your location.
+	trigger:
+		message "%{mainprefix}% &8> &7You have set spawn at your location!"
+		set {spawn} to location of player
+		loop all players:
+			if loop-player has permission "staff.logs":
+				send "&b[S] &b&o%sender% &3has setspawn at &b%location of sender%&3." to loop-player
+
+command /spawn [<player>]:
+	description: Teleport you to spawn.
+	trigger:
+		if {spawn} isn't set:
+			message "%{mainprefix}% &8> &cSpawn currently isn't set!"
+			stop
+		else:
+			if arg-1 is not set:
+				teleport player to {spawn}
+				message "%{mainprefix}% &8> &7Teleporting..."	
+			else:
+				if sender has permission "spawn.spawn.others":
+					if argument is online:
+						teleport argument to {spawn}
+					if sender is a player:
+						message "%{mainprefix}% &8> &7You have been teleported to spawn by &6%player%&7." to argument 1
+					if sender is not a player:
+						message "%{mainprefix}% &8> &7You have been teleported to spawn by &6Console&7." to argument 1
+						teleport player to {spawn}
+				else:
+					message "&cYou are not authorized for this command!"
+
+on join:
+	wait 2 ticks
+	teleport player to {spawn}
+
+command /delspawn:
+	permission: staff.spawn
+	permission message: "&cYou are not authorized for this command!"
+	description: Unset spawn location.
+	trigger:
+		delete {spawn}
+		message "%{mainprefix}% &8> &7You have successfully unset spawn!"
+		loop all players:
+			if loop-player has permission "staff.logs":
+				send "&b[S] &b&o%sender% &3has deleted &bspawn&3." to loop-player
+						
+command /enchant <enchantment type>:
+    trigger:
+        enchant player's tool with arg-1
+
+command /sc [<text>]:
+	aliases:staffchat
+	permission: staff.chat
+	permission message: &cYou are not authorized for this command!
+	trigger:
+		if arg-1 is set:
+			loop all players:
+				if loop-player has permission "staff.chat" or "staff.logs":
+					send "&b[SC] &b%player's display name%&3: &b%arg-1%" to loop player
+		else:
+			if {staffchat::%uuid of player%} is not set:
+				set {staffchat::%uuid of player%} to true
+				send "%{mainprefix}% &8> &7You have &aenabled &7staffchat."
+			else:
+				clear {staffchat::%uuid of player%}
+				send "%{mainprefix}% &8> &7You have &cdisabled &7staffchat."
+
+on chat:
+	if {staffchat::%uuid of player%} is set:
+		cancel event
+		loop all players:
+			if loop-player has permission "staff.chat" or "staff.logs":
+				send "&b[SC] &b%player's display name%&3: &b%arg-1%" to loop-player
+
+on chat:
+	if message starts with "# ":
+		if player has permission "staff.chat":
+			set {_scmessage} to message
+			replace all "#" in {_scmessage} with ""
+			loop all players:
+				if loop-player has permission "staff.chat" or "staff.logs":
+					send "&b[SC] &b%player's display name%&3: &b%message%" to loop-player
+		
+command /fix [<text>]:
+	permission: staff.fix
+	permission message: &cYou are not authorized for this command!
+	trigger:
+		if arg-1 is not set:	
+			send "%{mainprefix}% &8> &cIncorrect Usage!"
+			send "&7/fix &chand &7OR /fix &call"
+		if arg-1 is set:
+			if arg-1 is "hand":
+				repair player's tool
+				send "%{mainprefix}% &8> &aSuccessfully repaired your %player's tool%!"
+			if arg-1 is "all":
+				loop all items in player's inventory:
+					repair loop-item
+				repair helmet slot of player
+				repair chestplate slot of player
+				repair leggings slot of player
+				repair boots slot of player
+				send "%{mainprefix}% &8> &aSuccessfully repaired all your items!"
+				
+			if arg-1 is not "all" or "hand":
+				send "%{mainprefix}% &8> &cIncorrect Usage!"
+				send "&7/fix &chand &7OR /fix &call"
+				
+command /heal [<offline player>]:
+	trigger:
+		if arg-1 is not set:
+			if player does not have permission "staff.heal":
+				send "&cYou are not authorized for this command!"
+			if player has permission "staff.heal":
+				set player's health to 20
+				set player's hunger to 20
+				send "%{mainprefix}% &8> &7You have been healed."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, that player is offline."
+			if arg-1 is online:
+				if player does not have permission "staff.heal.others":
+					if player has permission "staff.heal":
+						send "&cYou have permission to /heal, but you need &4staff.heal.others&c for this!"
+					else:
+						send "&cYou are not authorized for this command!"
+				if player has permission "staff.heal.others":	
+					set arg-1's health to 20
+					set arg-1's hunger to 20
+					send "%{mainprefix}% &8> &7You have healed &a%arg-1%&7!"
+					send "%{mainprefix}% &8> &7You have been healed by &a%player%&7!" to arg-1
+
+command /feed [<offline player>]:
+	trigger:
+		if arg-1 is not set:
+			if player does not have permission "staff.feed":
+				send "&cYou are not authorized for this command!"
+			if player has permission "staff.feed":
+				set player's hunger to 20
+				send "%{mainprefix}% &8> &7You have been fed."
+		if arg-1 is set:
+			if arg-1 is offline:
+				send "%{mainprefix}% &8> &7Sorry, that player is offline."
+			if arg-1 is online:
+				if player does not have permission "staff.feed.others":
+					if player has permission "staff.feed":
+						send "&cYou have permission to /feed, but you need &4staff.feed.others&c for this!"
+					else:
+						send "&cYou are not authorized for this command!"
+				if player has permission "staff.feed.others":	
+					set arg-1's hunger to 20
+					send "%{mainprefix}% &8> &7You have fed &a%arg-1%&7!"
+					send "%{mainprefix}% &8> &7You have been fed by &a%player%&7!" to arg-1
+
+command /god [<player>]:
+	permission: staff.god
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			if {god.%player%} is true:
+				set {god.%player%} to false
+				send "%{mainprefix}% &8> &7You have &cdisabled &7godmode!"
+				stop trigger
+			if {god.%player%} is false:
+				set {god.%player%} to true
+				send "%{mainprefix}% &8> &7You have &aenabled &7godmode!"
+		if arg-1 is set:
+			if {god.%arg-1%} is true:
+				set {god.%arg-1%} to false
+				send "%{mainprefix}% &8> &7You have &cdisabled &a%arg-1%&7's godmode!"
+				send "%{mainprefix}% &8> &c%player% &7has &cdisabled &7your godmode!" to arg-1
+				stop trigger
+			if {god.%arg-1%} is false:
+				set {god.%arg-1%} to true
+				send "%{mainprefix}% &8> &7You have &aenabled &c%arg-1%&7's godmode!"
+				send "%{mainprefix}% &8> &a%player% &7has &aenabled &7your godmode!" to arg-1
+
+on damage:
+	if {god.%victim%} is true:
+		cancel event
+
+on any movement:
+	if {freeze.%player%} is true:
+		cancel event
+		send "&cYOU ARE FROZEN! DO NOT MOVE!" to player
+	
+on damage:
+	if {freeze.%attacker%} is true:
+		cancel event
+		send "&cSorry, you are currently &b&l&o&nFROZEN&c!" to attacker
+	if {freeze.%victim%} is true:
+		cancel event
+		send "&cSorry, that player is currently &b&l&o&nFROZEN&c!" to attacker
+
+on command:
+    if command is "pl", "plugins", "minecraft:pl" or "minecraft:plugins":
+        if player does not have permission "plugins.see":
+            cancel event
+            send "&fPlugins (4): &aWhy&f, &aDid&f, &aYou&f, &aTry?"
+			
+command /freeze [<player>]: 
+    permission: staff.freeze
+    permission message: &cYou do not have permission to this command.
+    trigger:
+        if arg-1 is not set:
+            send "%{mainprefix}% &8> &7Who would you like to &b&m&ofreeze&7?"
+        if arg-1 is set:
+            set {freeze.%arg-1%} to true
+            send "%{mainprefix}% &8> &7You have frozen &c%arg-1%&7!"
+            send "&c&lYOU HAVE BEEN FROZEN!" to arg-1
+
+command /unfreeze [<player>]: 
+    permission: staff.freeze
+    permission message: &cYou do not have permission to this command.
+    trigger:
+        if arg-1 is not set:
+            send "%{mainprefix}% &8> &7Who would you like to &4unfreeze&7?"
+        if arg-1 is set:
+            set {freeze.%arg-1%} to false
+            send "%{mainprefix}% &8> &7You have unfrozen &c%arg-1%&7!"
+            send "&c&lYOU HAVE BEEN UNFROZEN!" to arg-1
+
+command /clearchat:
+	permission: staff.chat.clear
+	trigger:
+		loop 500 times:
+			broadcast ""
+		wait 1 tick
+		broadcast "%{mainprefix}% &8> &7Chat has been cleared by &a%sender%&7."
+
+command /serversettings:
+	permission: staff.settings
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if {defaultbanmessage} is not set:
+			set {defaultbanmessage} to "The Ban Hammer has spoken!"
+		if {defaultkickmessage} is not set:
+			set {defaultkickmessage} to "Kicked from server."
+		if {defaultmutemessage} is not set:
+			set {defaultmutemessage} to "Chat Offences."
+		wait 3 ticks
+		open chest with 3 rows named "&e&lSETTINGS" to player
+		wait 1 tick
+		format slot 10 of player with clock named "&b&lMessages" to close then run [execute player command "servermessagesettings"]
+		format slot 13 of player with gray wool named "&8&l???" with lore "&7You can add suggestions on what to add here on||&7the discord server!" to be unstealable
+		format slot 16 of player with gray wool named "&8&l???" with lore "&7You can add suggestions on what to add here on||&7the discord server!" to be unstealable
+
+command /servermessagesettings:
+	permission: staff.settings
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		wait 3 ticks
+		open chest with 4 rows named "&e&lMESSAGE SETTINGS" to player
+		wait 1 ticks
+		format slot 0 of player with book named "&6Default Ban Reason" with lore "&7Currently: &c%{defaultbanmessage}%" to close then run [execute player command "managemessage ban"]
+		format slot 1 of player with book named "&6Default Kick Reason" with lore "&7Currently: &c%{defaultkickmessage}%" to close then run [execute player command "managemessage kick"]
+		format slot 2 of player with book named "&6Default Mute Reason" with lore "&7Currently: &c%{defaultmutemessage}%" to close then run [execute player command "managemessage mute"]
+		format slot 3 of player with gray wool named "&8&l???" with lore "&7You can add suggestions on what to add here on||&7the discord server!" to be unstealable
+		format slot 31 of player with chest named "&cBACK" to close then run [execute player command "serversettings"]
+		 
+command /managemessage [<text>]:
+	permission: staff.settings
+	permission message: &cYou do not have permission to this command.
+	trigger:
+		if arg-1 is not set:
+			send "&cInvalid Gateway! (503)"
+		if arg-1 is set:
+			if arg-1 is "ban":
+				send "%{mainprefix}% &8> &7What would you like to set the new default &cban &7reason to? (type in chat)"
+				set {settingthedefaultbanreason.%uuid of player%} to true
+			if arg-1 is "kick":
+				send "%{mainprefix}% &8> &7What would you like to set the new default &6kick &7reason to? (type in chat)"
+				set {settingthedefaultkickreason.%uuid of player%} to true
+			if arg-1 is "mute":
+				send "%{mainprefix}% &8> &7What would you like to set the new default &emute &7reason to? (type in chat)"
+				set {settingthedefaultmutereason.%uuid of player%} to true
+				
+on chat:
+	if {settingthedefaultbanreason.%uuid of player%} is true:
+		cancel event
+		set {defaultbanmessage} to the chat message
+		send "%{mainprefix}% &8> &7You have changed the default &cban &7reason to &6%the chat message%&7!"
+		execute player command "servermessagesettings"
+		clear {settingthedefaultbanreason.%uuid of player%}
+		
+on chat:		
+	if {settingthedefaultkickreason.%uuid of player%} is true:
+		cancel event
+		set {defaultkickmessage} to the chat message
+		send "%{mainprefix}% &8> &7You have changed the default &6kick &7reason to &6%the chat message%&7!"
+		execute player command "servermessagesettings"
+		clear {settingthedefaultkickreason.%uuid of player%}
+		
+on chat:		
+	if {settingthedefaultmutereason.%uuid of player%} is true:
+		cancel event
+		set {defaultmutemessage} to the chat message
+		send "%{mainprefix}% &8> &7You have changed the default &emute &7reason to &6%the chat message%&7!"
+		execute player command "servermessagesettings"
+		clear {settingthedefaultmutereason.%uuid of player%}
+
+on command:
+    if command contains ":":
+        cancel event
+        send "&cno sorry"
