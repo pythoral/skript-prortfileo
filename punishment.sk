@@ -1,0 +1,170 @@
+command /ban [<offline player>] [<text>]:
+	permission: staff.ban
+	permission message: &cInsufficient Permission
+	trigger:
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &c/ban (player) (reason) [-s]"
+			send "&7&oTemporary bans currently in developement."
+		if arg-1 is set:
+			if arg-2 is not set:
+				if {defaultbanmessage} is not set:
+					broadcast "&8[%{mainprefix}%&8] &c%player% &7has banned &c%arg-1% &7for &cThe Ban Hammer has spoken!"
+					send "&7&oYou can configure the default ban message in /serversettings."
+					set {banned.%uuid of arg-1%} to true
+				if {defaultbanmessage} is set:
+					broadcast "&8[%{mainprefix}%&8] &c%player% &7has banned &c%arg-1% &7for &c%{defaultbanmessage}%"
+					set {banned.%uuid of arg-1%} to true
+			if arg-2 is set:
+				if arg-2 is "-s":
+					set {banned.%uuid of arg-1%} to true
+					if {defaultbanmessage} is not set:
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently banned &b&o%arg-1% &3for &bThe Ban Hammer has spoken!" to loop-player
+					if {defaultbanmessage} is set:
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently banned &b&o%arg-1% &3for &b%{defaultbanmessage}%" to loop-player
+				if arg-2 is not "-s":
+					set {banned.%uuid of arg-1%} to true
+					if arg-2 does not contain "-s":
+						broadcast "&8[%{mainprefix}%&8] &c%player% &7has banned &c%arg-1% &7for &c%arg-2%"
+					if arg-2 contains "-s":
+						set {_silentlybannedmessage} to arg-2
+						replace all "-s" in {_silentlybannedmessage} with ""
+						wait 1 tick
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently banned &b&o%arg-1% &3for &b%{_silentlybannedmessage}%" to loop-player
+								
+command /unban [<offline player>] [<text>]:
+	permission: staff.unban
+	permission message: &cInsufficient Permission
+	trigger:
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &c/unban (player) [-s]"
+		if arg-1 is set:
+			if arg-2 is not set:
+				set {banned.%uuid of arg-1%} to false
+				broadcast "&8[%{mainprefix}%&8] &c%player% &7has unbanned &c%arg-1%&7."
+			if arg-2 is set:
+				if arg-2 is not "-s":
+					send "%{mainprefix}% &8> &c/unban (player) [-s]"
+				if arg-2 is "-s":
+					set {banned.%uuid of arg-1%} to false
+					loop all players:
+						if loop-player has permission "staff.logs":	
+							send "&b[S] %player% &3has silently unbanned &b&o%arg-1%&3." to loop-player
+							
+command /kick [<offline player>] [<text>]:							
+	permission: staff.kick
+	permission message: &cInsufficient Permission
+	trigger:
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &c/kick (player) (reason) [-s]"
+		if arg-1 is set:
+			if arg-1 is online:
+				if arg-2 is not set:
+					if {defaultkickmessage} is not set:
+						broadcast "&8[%{mainprefix}%&8] &c%player% &7has kicked &c%arg-1% &7for &cKicked from server."
+						send "&7&oYou can configure the default kick message in /serversettings."
+						kick arg-1 due to "&cKicked from server."
+					if {defaultkickmessage} is set:
+						broadcast "&8[%{mainprefix}%&8] &c%player% &7has kicked &c%arg-1% &7for &c%{defaultkickmessage}%"
+						kick arg-1 due to "&c%{defaultkickmessage}%"
+				if arg-2 is set:
+					if arg-2 is "-s":
+						if {defaultkickmessage} is not set:
+							loop all players:
+								if loop-player has permission "staff.logs":	
+									send "&b[S] %player% &3has silently kicked &b&o%arg-1% &3for &bKicked from server." to loop-player
+							kick arg-1 due to "&cKicked from server."		
+						if {defaultkickmessage} is set:
+							loop all players:
+								if loop-player has permission "staff.logs":	
+									send "&b[S] %player% &3has silently kicked &b&o%arg-1% &3for &b%{defaultkickmessage}%" to loop-player
+							kick arg-1 due to "&c%{defaultkickmessage}%"		
+					if arg-2 is not "-s":
+						if arg-2 does not contain "-s":
+							broadcast "&8[%{mainprefix}%&8] &c%player% &7has kicked &c%arg-1% &7for &c%arg-2%"
+							kick arg-1 due to "&c%arg-2%"
+						if arg-2 contains "-s":
+							set {_silentlykickedmessage} to arg-2
+							replace all "-s" in {_silentlykickedmessage} with ""
+							wait 1 tick
+							loop all players:
+								if loop-player has permission "staff.logs":	
+									send "&b[S] %player% &3has silently kicked &b&o%arg-1% &3for &b%{_silentlykickedmessage}%" to loop-player
+							kick arg-1 due to "&c%{_silentlykickedmessage}%"		
+			if arg-1 is offline:
+				send "&cThe player is currently offline!"
+				
+command /mute [<offline player>] [<text>]:
+	permission: staff.mute
+	permission message: &cInsufficient Permission
+	trigger:
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &c/mute (player) (reason) [-s]"
+			send "&7&oTemporary mutes currently in developement."
+		if arg-1 is set:
+			if arg-2 is not set:
+				if {defaultmutemessage} is not set:
+					broadcast "&8[%{mainprefix}%&8] &c%player% &7has muted &c%arg-1% &7for &cChat Offences."
+					send "&7&oYou can configure the default mute message in /serversettings."
+					set {muted.%uuid of arg-1%} to true
+				if {defaultmutemessage} is set:
+					broadcast "&8[%{mainprefix}%&8] &c%player% &7has muted &c%arg-1% &7for &c%{defaultmutemessage}%"
+					set {muted.%uuid of arg-1%} to true
+			if arg-2 is set:
+				if arg-2 is "-s":
+					set {muted.%uuid of arg-1%} to true
+					if {defaultmutemessage} is not set:
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently muted &b&o%arg-1% &3for &bChat Offences." to loop-player
+					if {defaultmutemessage} is set:
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently muted &b&o%arg-1% &3for &b%{defaultmutemessage}%" to loop-player
+				if arg-2 is not "-s":
+					set {muted.%uuid of arg-1%} to true
+					if arg-2 does not contain "-s":
+						broadcast "&8[%{mainprefix}%&8] &c%player% &7has muted &c%arg-1% &7for &c%arg-2%"
+					if arg-2 contains "-s":
+						set {_silentlymutedmessage} to arg-2
+						replace all "-s" in {_silentlymutedmessage} with ""
+						wait 1 tick
+						loop all players:
+							if loop-player has permission "staff.logs":	
+								send "&b[S] %player% &3has silently muted &b&o%arg-1% &3for &b%{_silentlymutedmessage}%" to loop-player
+								
+								
+								
+on join:	
+	if {banned.%uuid of player%} is true:
+		kick player due to "&cYou are banned from the server."
+					
+command /unmute [<offline player>] [<text>]:
+	permission: staff.unmute
+	permission message: &cInsufficient Permission
+	trigger:
+		if arg-1 is not set:
+			send "%{mainprefix}% &8> &c/unmute (player) [-s]"
+		if arg-1 is set:
+			if arg-2 is not set:
+				set {muted.%uuid of arg-1%} to false
+				broadcast "&8[%{mainprefix}%&8] &c%player% &7has unmuted &c%arg-1%&7."
+			if arg-2 is set:
+				if arg-2 is not "-s":
+					send "%{mainprefix}% &8> &c/unmute (player) [-s]"
+				if arg-2 is "-s":
+					set {muted.%uuid of arg-1%} to false
+					loop all players:
+						if loop-player has permission "staff.logs":	
+							send "&b[S] %player% &3has silently unmuted &b&o%arg-1%&3." to loop-player
+
+on chat:
+	if {muted.%uuid of player%} is true:
+		cancel event
+		send "&cYou are currently muted."
+				
